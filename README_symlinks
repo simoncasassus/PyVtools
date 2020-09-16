@@ -1,0 +1,18 @@
+
+
+
+
+
+ln -s   ~/gitcommon/PyVtools/view.py  ~/common/python/bin/view.py 
+ln -s   ~/gitcommon/PyVtools/head.py  ~/common/python/bin/head.py 
+ln -s   ~/gitcommon/PyVtools/beam.py  ~/common/python/bin/beam.py
+
+
+
+echo "# PyVtools" >> README.md
+git init
+git add --all
+git commit -m "first commit"
+git branch -M master
+git remote add origin git@github.com:simoncasassus/PyVtools.git
+git push -u origin master
