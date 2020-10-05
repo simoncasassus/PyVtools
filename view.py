@@ -1,4 +1,4 @@
-#!/Users/simon/opt/anaconda3/bin/python
+#!/usr/bin/env python3
 import sys
 import os
 import os.path
