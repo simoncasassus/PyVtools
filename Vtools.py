@@ -1,3 +1,4 @@
+import os
 import sys
 import numpy as np
 import astropy
@@ -8,7 +9,8 @@ from matplotlib.widgets import RectangleSelector
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from pprint import pprint as pp
 
-include_path='/Users/simon/common/python/include/'
+
+include_path=os.environ['HOME']+'/common/python/include/'
 sys.path.append(include_path)
 from ImUtils.Resamp import gridding
 
