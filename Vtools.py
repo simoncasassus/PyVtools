@@ -295,7 +295,7 @@ def View(indata,cmap='RdBu_r',AllContours=False):
 
 
 
-def Spec(indata):
+def Spec(indata,labels=False):
 
     if not isinstance(indata,list): #
         indata=[indata,]
@@ -304,9 +304,13 @@ def Spec(indata):
     global fig1
     global ax1
     fig1,ax1=plt.subplots()
-    
+
     for ispec,aspec in enumerate(indata):
-        theplot=ax1.plot(aspec[:,0],aspec[:,1],label=str(ispec))
+        if (labels):
+            linelabel=labels[ispec]
+        else:
+            linelabel=str(ispec)
+        theplot=ax1.plot(aspec[:,0],aspec[:,1],label=linelabel)
 
     plt.legend()
     plt.show()
