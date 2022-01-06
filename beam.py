@@ -20,6 +20,11 @@ if 'BMAJ' in hdr.keys():
 elif (len(hdu)>1):
     print("no beam info, look for extra HDU")
     beamhdr=hdu[1].header
+
+    #print("beamhdr")
+    #from pprint import pprint
+    #pprint(beamhdr)
+    
     beamdata=hdu[1].data
     #print("beamvector", beamdata)
 
