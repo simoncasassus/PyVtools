@@ -266,9 +266,10 @@ def View(indata, cmap='RdBu_r', AllContours=False):
 
     beam = False
     import re
-    if re.search('beam', hdr['BUNIT'], re.IGNORECASE):
-        beam = (np.pi / (4. * np.log(2.))) * (hdr['BMAJ'] * hdr['BMIN'] /
-                                                   (hdr['CDELT2']**2))
+    if 'BUNIT' in hdr.keys():
+        if re.search('beam', hdr['BUNIT'], re.IGNORECASE):
+            beam = (np.pi / (4. * np.log(2.))) * (hdr['BMAJ'] * hdr['BMIN'] /
+                                                  (hdr['CDELT2']**2))
 
     fig1, ax1 = plt.subplots()
 
