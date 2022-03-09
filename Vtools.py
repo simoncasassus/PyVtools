@@ -107,7 +107,9 @@ def line_select_callback(eclick, erelease):
         "Flux: %.3e  Rms: %.3e  Min: %.3e Max: %.3e Median: %.3e PSNR: %.3e" %
         (np.sum(subim), np.std(subim), np.min(subim), np.max(subim),
          np.median(subim), subim_max / np.std(subim)))
-
+    if beam:
+        print("Units /beam, Flux is ",np.sum(subim)/beam)
+        
     theimage.set_clim(vmin=range1, vmax=range2)
 
     #zetransform=theimage.get_transform()
@@ -260,6 +262,15 @@ def View(indata, cmap='RdBu_r', AllContours=False):
 
     global fig1
     global ax1
+    global beam
+
+    beam = False
+    import re
+    if 'BUNIT' in hdr.keys():
+        if re.search('beam', hdr['BUNIT'], re.IGNORECASE):
+            beam = (np.pi / (4. * np.log(2.))) * (hdr['BMAJ'] * hdr['BMIN'] /
+                                                  (hdr['CDELT2']**2))
+
     fig1, ax1 = plt.subplots()
 
     (d0, a0) = pix2wcs_0CRVAL(0., 0.)
