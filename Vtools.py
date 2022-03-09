@@ -194,7 +194,7 @@ def View(indata, cmap='RdBu_r', AllContours=False):
     subim_max = 0.
 
     AddContours = False
-    if isinstance(indata, list):  # astropy.io.fits.hdu.hdulist.HDUList):
+    if isinstance(indata, list) or isinstance(indata, tuple):  # astropy.io.fits.hdu.hdulist.HDUList):
         #print("This is an HDU List")
         hdu = indata[0]
         if isinstance(hdu, astropy.io.fits.hdu.hdulist.HDUList):
