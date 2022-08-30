@@ -199,8 +199,10 @@ def View(indata, cmap='RdBu_r', AllContours=False):
     if isinstance(indata, list):  # astropy.io.fits.hdu.hdulist.HDUList):
         #print("This is an HDU List")
         hdu = indata[0]
+        print(type(hdu))
         if isinstance(hdu, astropy.io.fits.hdu.hdulist.HDUList):
             hdu = hdu[0]
+            print("CPICPI")
         elif isinstance(indata, np.ndarray):
             hdu = fits.PrimaryHDU()
             hdu.data = indata
@@ -247,8 +249,8 @@ def View(indata, cmap='RdBu_r', AllContours=False):
             hdr['CRPIX2'] = int(ny / 2.)
             hdr['CTYPE1'] = 'pixel'
             hdr['CTYPE2'] = 'pixel'
-
-    im = hdu.data
+            
+    im = np.squeeze(hdu.data)
     hdr = hdu.header
 
     if (not 'CTYPE1' in hdr.keys()):
