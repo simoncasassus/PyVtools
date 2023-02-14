@@ -123,30 +123,6 @@ def line_select_callback(eclick, erelease):
     #(invx1,invy1)=invzetransform.transform((i1,j1))
     #(invx2,invy2)=invzetransform.transform((i2,j2))
 
-
-    print(" The button you used were: %s %s" % (eclick.button, erelease.button))
-    print("eclick.button",eclick.button)
-    abutton = str(eclick.button)
-    if ('RIGHT' in abutton):
-        print("OK")
-        hdr = hdu.header
-
-        hduz = fits.PrimaryHDU()
-        hduz.data = subim
-        hdrz = hduz.header
-        hdrz['CRPIX1']=hdr['CRPIX1']-i1m
-        hdrz['CRPIX2']=hdr['CRPIX2']-j1m
-        hdrz['CRVAL1']=hdr['CRVAL1']
-        hdrz['CRVAL2']=hdr['CRVAL2']
-        hdrz['CDELT1']=hdr['CDELT1']
-        hdrz['CDELT2']=hdr['CDELT2']
-        hdrz['CTYPE1']=hdr['CTYPE1']
-        hdrz['CTYPE2']=hdr['CTYPE2']
-        hduz.header=hdrz
-        hduz.writeto('view.fits',overwrite=True)
-
-        
-    
     if (eclick.dblclick):
         # on double click clear and deactivate RectangleSelector
         # had to place this here as a mouse event because it bugs in toggle_selector(event), where it gives a logx axis and an error.
@@ -192,12 +168,9 @@ def toggle_selector(event):
         toggle_selector.RS.set_visible(True)
         return
 
-        return
-
     if event.key in ['H', 'h']:
         print('key a: activate RectangleSelector (dbleclick deactivates)')
         print('key c: change colormap')
-        print('Right click: 2-button click save current region to view.fits')
         return
 
 
@@ -223,9 +196,10 @@ def View(indata, cmap='RdBu_r', AllContours=False):
     subim_max = 0.
 
     AddContours = False
-    if isinstance(indata, list) or isinstance(indata, tuple):  # astropy.io.fits.hdu.hdulist.HDUList):
+    if isinstance(indata, list):  # astropy.io.fits.hdu.hdulist.HDUList):
         #print("This is an HDU List")
         hdu = indata[0]
+        print(type(hdu))
         if isinstance(hdu, astropy.io.fits.hdu.hdulist.HDUList):
             hdu = hdu[0]
             print("CPICPI")
