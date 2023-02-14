@@ -228,7 +228,6 @@ def View(indata, cmap='RdBu_r', AllContours=False):
         hdu = indata[0]
         if isinstance(hdu, astropy.io.fits.hdu.hdulist.HDUList):
             hdu = hdu[0]
-            print("CPICPI")
         elif isinstance(indata, np.ndarray):
             hdu = fits.PrimaryHDU()
             hdu.data = indata
