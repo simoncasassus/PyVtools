@@ -1,5 +1,0 @@
-ln -s   ~/gitcommon/PyVtools/view.py  ~/common/python/bin/view.py 
-ln -s   ~/gitcommon/PyVtools/head.py  ~/common/python/bin/head.py 
-ln -s   ~/gitcommon/PyVtools/beam.py  ~/common/python/bin/beam.py
-
-
