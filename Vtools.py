@@ -9,6 +9,13 @@ from matplotlib.widgets import RectangleSelector
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from pprint import pprint as pp
 
+if not sys.warnoptions:
+    import os, warnings
+    #warnings.simplefilter("default") # Change the filter in this process
+    warnings.simplefilter("ignore")  # Change the filter in this process
+    #os.environ["PYTHONWARNINGS"] = "default" # Also affect subprocesses
+    os.environ["PYTHONWARNINGS"] = "ignore"  # Also affect subprocesses
+
 include_path = os.environ['HOME'] + '/common/python/include/'
 sys.path.append(include_path)
 from ImUtils.Resamp import gridding
@@ -186,7 +193,7 @@ def colorbar(Mappable, Orientation='vertical'):
                         format="%.1e")
 
 
-def View(indata, cmap='RdBu_r', AllContours=False):
+def View(indata, cmap='RdBu_r', AllContours=False,cmapcontours='Greens_r', contlevels=[0.2, 0.4, 0.6, 0.8]):
 
     #help(indata)
     #indatatype=type(indata)
@@ -201,7 +208,6 @@ def View(indata, cmap='RdBu_r', AllContours=False):
         hdu = indata[0]
         if isinstance(hdu, astropy.io.fits.hdu.hdulist.HDUList):
             hdu = hdu[0]
-            print("CPICPI")
         elif isinstance(indata, np.ndarray):
             hdu = fits.PrimaryHDU()
             hdu.data = indata
@@ -307,7 +313,7 @@ def View(indata, cmap='RdBu_r', AllContours=False):
     colorbar(theimage)
 
     if AllContours:
-        levels = np.array([0.2, 0.4, 0.6, 0.8]) * np.max(im)
+        levels = np.array(contlevels) * np.max(im)
         #ax1.contour(im, origin='lower', extent=[a0,a1,d0,d1], levels=levels,colors='green',linewidths=2.0,alpha=0.5)
         ax1.contour(im,
                     origin='lower',
@@ -330,7 +336,7 @@ def View(indata, cmap='RdBu_r', AllContours=False):
         else:
             ax1.contour(imcontours,
                         origin='lower',
-                        cmap=cmap,
+                        cmap=cmapcontours,
                         extent=[a0, a1, d0, d1],
                         levels=levels)
 
