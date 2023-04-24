@@ -1,16 +1,8 @@
 #!/usr/bin/env python3
 import sys
-import os
-import os.path
-import numpy as np
-import astropy
 from astropy.io import fits 
 
-include_path=os.environ['HOME']+'/common/python/include/'
-sys.path.append(include_path)
-
-#from Resamp import cube2im
-import Vtools
+from . import Vtools
 from ImUtils.Cube2Im import slice0
 
 filename_source=sys.argv[1]

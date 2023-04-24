@@ -1,14 +1,9 @@
 #!/usr/bin/env python3
 import sys
-import os
-import os.path
-import numpy as np
 from astropy.io import fits 
-from pprint  import pprint as pp
-
-
 
 filename_source=sys.argv[1]
+print(filename_source)
 hdu = fits.open(filename_source)
 
 hdr = hdu[0].header
