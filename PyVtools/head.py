@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 import sys
-import os
-import os.path
-import numpy as np
-import astropy
 from astropy.io import fits 
 
 from pprint  import pprint as pp
