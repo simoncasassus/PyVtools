@@ -8,6 +8,7 @@ import matplotlib.colors as colors
 from matplotlib.widgets import RectangleSelector
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from pprint import pprint as pp
+from copy import deepcopy
 
 include_path = os.environ['HOME'] + '/common/python/include/'
 sys.path.append(include_path)
@@ -128,20 +129,25 @@ def line_select_callback(eclick, erelease):
     print("eclick.button",eclick.button)
     abutton = str(eclick.button)
     if ('RIGHT' in abutton):
-        print("OK")
         hdr = hdu.header
 
         hduz = fits.PrimaryHDU()
         hduz.data = subim
-        hdrz = hduz.header
+        hdrz = deepcopy(hdr)# hduz.header
         hdrz['CRPIX1']=hdr['CRPIX1']-i1m
         hdrz['CRPIX2']=hdr['CRPIX2']-j1m
-        hdrz['CRVAL1']=hdr['CRVAL1']
-        hdrz['CRVAL2']=hdr['CRVAL2']
-        hdrz['CDELT1']=hdr['CDELT1']
-        hdrz['CDELT2']=hdr['CDELT2']
-        hdrz['CTYPE1']=hdr['CTYPE1']
-        hdrz['CTYPE2']=hdr['CTYPE2']
+        #hdrz['CRVAL1']=hdr['CRVAL1']
+        #hdrz['CRVAL2']=hdr['CRVAL2']
+        #hdrz['CDELT1']=hdr['CDELT1']
+        #hdrz['CDELT2']=hdr['CDELT2']
+        #hdrz['CTYPE1']=hdr['CTYPE1']
+        #hdrz['CTYPE2']=hdr['CTYPE2']
+        #
+        #if 'BMAJ' in hdr.keys():
+        #    hdrz['BMAJ']=hdr['BMAJ']
+        #    hdrz['BMIN']=hdr['BMAJ']
+        #    hdrz['BMPA']=hdr['BMAJ']
+            
         hduz.header=hdrz
         hduz.writeto('view.fits',overwrite=True)
 
