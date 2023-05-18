@@ -2,7 +2,7 @@
 import sys
 from astropy.io import fits 
 
-from . import Vtools
+import Vtools
 from ImUtils.Cube2Im import slice0
 
 filename_source=sys.argv[1]

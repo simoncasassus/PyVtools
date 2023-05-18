@@ -1,0 +1,2 @@
+[console_scripts]
+myfuncshello = myfuncs.script:main
