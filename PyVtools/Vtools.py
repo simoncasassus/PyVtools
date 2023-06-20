@@ -1,16 +1,19 @@
-import os
-import sys
 import numpy as np
 import astropy
 from astropy.io import fits
 import matplotlib.pyplot as plt
-import matplotlib.colors as colors
 from matplotlib.widgets import RectangleSelector
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from pprint import pprint as pp
+from copy import deepcopy
 
-include_path = os.environ['HOME'] + '/common/python/include/'
-sys.path.append(include_path)
+if not sys.warnoptions:
+    import os, warnings
+    warnings.simplefilter("ignore")  # Change the filter in this process
+    os.environ["PYTHONWARNINGS"] = "ignore"  # Also affect subprocesses
+
+#include_path = os.environ['HOME'] + '/common/python/include/'
+#sys.path.append(include_path)
 from ImUtils.Resamp import gridding
 
 icmap = 0
@@ -123,6 +126,35 @@ def line_select_callback(eclick, erelease):
     #(invx1,invy1)=invzetransform.transform((i1,j1))
     #(invx2,invy2)=invzetransform.transform((i2,j2))
 
+
+    print(" The button you used were: %s %s" % (eclick.button, erelease.button))
+    print("eclick.button",eclick.button)
+    abutton = str(eclick.button)
+    if ('RIGHT' in abutton):
+        hdr = hdu.header
+
+        hduz = fits.PrimaryHDU()
+        hduz.data = subim
+        hdrz = deepcopy(hdr)# hduz.header
+        hdrz['CRPIX1']=hdr['CRPIX1']-i1m
+        hdrz['CRPIX2']=hdr['CRPIX2']-j1m
+        #hdrz['CRVAL1']=hdr['CRVAL1']
+        #hdrz['CRVAL2']=hdr['CRVAL2']
+        #hdrz['CDELT1']=hdr['CDELT1']
+        #hdrz['CDELT2']=hdr['CDELT2']
+        #hdrz['CTYPE1']=hdr['CTYPE1']
+        #hdrz['CTYPE2']=hdr['CTYPE2']
+        #
+        #if 'BMAJ' in hdr.keys():
+        #    hdrz['BMAJ']=hdr['BMAJ']
+        #    hdrz['BMIN']=hdr['BMAJ']
+        #    hdrz['BMPA']=hdr['BMAJ']
+            
+        hduz.header=hdrz
+        hduz.writeto('view.fits',overwrite=True)
+
+        
+    
     if (eclick.dblclick):
         # on double click clear and deactivate RectangleSelector
         # had to place this here as a mouse event because it bugs in toggle_selector(event), where it gives a logx axis and an error.
@@ -168,9 +200,12 @@ def toggle_selector(event):
         toggle_selector.RS.set_visible(True)
         return
 
+        return
+
     if event.key in ['H', 'h']:
         print('key a: activate RectangleSelector (dbleclick deactivates)')
         print('key c: change colormap')
+        print('Right click: 2-button click save current region to view.fits')
         return
 
 
@@ -186,7 +221,7 @@ def colorbar(Mappable, Orientation='vertical'):
                         format="%.1e")
 
 
-def View(indata, cmap='RdBu_r', AllContours=False):
+def View(indata, cmap='RdBu_r', AllContours=False,cmapcontours='Greens_r', contlevels=[0.2, 0.4, 0.6, 0.8]):
 
     #help(indata)
     #indatatype=type(indata)
@@ -196,13 +231,11 @@ def View(indata, cmap='RdBu_r', AllContours=False):
     subim_max = 0.
 
     AddContours = False
-    if isinstance(indata, list):  # astropy.io.fits.hdu.hdulist.HDUList):
+    if isinstance(indata, list) or isinstance(indata, tuple):  # astropy.io.fits.hdu.hdulist.HDUList):
         #print("This is an HDU List")
         hdu = indata[0]
-        print(type(hdu))
         if isinstance(hdu, astropy.io.fits.hdu.hdulist.HDUList):
             hdu = hdu[0]
-            print("CPICPI")
         elif isinstance(indata, np.ndarray):
             hdu = fits.PrimaryHDU()
             hdu.data = indata
@@ -225,6 +258,7 @@ def View(indata, cmap='RdBu_r', AllContours=False):
                 hducontours = fits.PrimaryHDU()
                 hducontours.data = imcont
                 hdr = hducontours.header
+                hdrcontours = {}
                 hdrcontours['CDELT1'] = 1.
                 hdrcontours['CDELT2'] = 1.
                 (nx, ny) = imcont.shape
@@ -290,7 +324,7 @@ def View(indata, cmap='RdBu_r', AllContours=False):
     if MedianvalRange:
         typicalvalue = np.median(im)
         medrms = np.sqrt(np.median((im - typicalvalue)**2))
-        print("typical value ", typicalvalue, " rms ", rms, "medrms", medrms)
+        print("typical value ", typicalvalue, "medrms", medrms)
         range1 = typicalvalue - 3. * medrms
         range2 = typicalvalue + 3. * medrms
 
@@ -308,7 +342,7 @@ def View(indata, cmap='RdBu_r', AllContours=False):
     colorbar(theimage)
 
     if AllContours:
-        levels = np.array([0.2, 0.4, 0.6, 0.8]) * np.max(im)
+        levels = np.array(contlevels) * np.max(im)
         #ax1.contour(im, origin='lower', extent=[a0,a1,d0,d1], levels=levels,colors='green',linewidths=2.0,alpha=0.5)
         ax1.contour(im,
                     origin='lower',
@@ -331,7 +365,7 @@ def View(indata, cmap='RdBu_r', AllContours=False):
         else:
             ax1.contour(imcontours,
                         origin='lower',
-                        cmap=cmap,
+                        cmap=cmapcontours,
                         extent=[a0, a1, d0, d1],
                         levels=levels)
 
