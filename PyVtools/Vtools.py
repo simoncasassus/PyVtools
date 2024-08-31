@@ -6,6 +6,7 @@ from matplotlib.widgets import RectangleSelector
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from pprint import pprint as pp
 from copy import deepcopy
+import sys
 
 if not sys.warnoptions:
     import os, warnings
@@ -106,10 +107,13 @@ def line_select_callback(eclick, erelease):
 
     #np.max(subim)/np.std(subim))
 
-    print(
-        "Flux: %.3e  Rms: %.3e  Min: %.3e Max: %.3e Median: %.3e PSNR: %.3e" %
-        (np.sum(subim), np.std(subim), np.min(subim), np.max(subim),
-         np.median(subim), subim_max / np.std(subim)))
+    mask = np.isfinite(subim)
+    if np.any(np.invert(mask)):
+        print("some pixels are nans")
+    mask = (subim != 0)
+    print("Flux: %.3e  Rms: %.3e  Min: %.3e Max: %.3e Median: %.3e PSNR: %.3e" %
+        (np.sum(subim[mask]), np.std(subim[mask]), np.min(subim[mask]), np.max(subim[mask]),
+         np.median(subim[mask]), subim_max / np.std(subim[mask])))
     if beam:
         print("Units /beam, Flux is ",np.sum(subim)/beam)
         
@@ -375,7 +379,7 @@ def View(indata, cmap='RdBu_r', AllContours=False,cmapcontours='Greens_r', contl
     toggle_selector.RS = RectangleSelector(
         ax1,
         line_select_callback,
-        drawtype='box',
+        #drawtype='box',
         useblit=True,
         button=[1, 3],  # don't use middle button
         minspanx=5,

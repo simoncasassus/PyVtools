@@ -8,5 +8,8 @@ Author-email: simoncasassus@gmail.com
 License: GPLv3
 Requires-Python: >=3.6
 Description-Content-Type: text/markdown
+Requires-Dist: numpy
+Requires-Dist: astropy
+Requires-Dist: matplotlib
 
 # PyVtools
