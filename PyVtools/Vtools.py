@@ -110,7 +110,7 @@ def line_select_callback(eclick, erelease):
     mask = np.isfinite(subim)
     if np.any(np.invert(mask)):
         print("some pixels are nans")
-    mask = (subim != 0)
+    #mask = (subim != 0)
     print("Flux: %.3e  Rms: %.3e  Min: %.3e Max: %.3e Median: %.3e PSNR: %.3e" %
         (np.sum(subim[mask]), np.std(subim[mask]), np.min(subim[mask]), np.max(subim[mask]),
          np.median(subim[mask]), subim_max / np.std(subim[mask])))
