@@ -311,6 +311,7 @@ def View(indata, cmap='RdBu_r', AllContours=False,cmapcontours='Greens_r', contl
             beam = (np.pi / (4. * np.log(2.))) * (hdr['BMAJ'] * hdr['BMIN'] /
                                                   (hdr['CDELT2']**2))
 
+    plt.close('all')
     fig1, ax1 = plt.subplots()
 
     (d0, a0) = pix2wcs_0CRVAL(0., 0.)
@@ -395,7 +396,7 @@ def View(indata, cmap='RdBu_r', AllContours=False,cmapcontours='Greens_r', contl
     plt.connect('key_press_event', toggle_selector)
 
     plt.show()
-
+    plt.close('all')
 
 def Spec(indata, labels=False):
     if not isinstance(indata, list):  #

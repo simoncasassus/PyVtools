@@ -1,4 +1,6 @@
+.gitignore
 README.md
+README_symlinks
 setup.py
 PyVtools/Vtools.py
 PyVtools/Vtools.squeeze.py
@@ -12,3 +14,8 @@ PyVtools.egg-info/dependency_links.txt
 PyVtools.egg-info/entry_points.txt
 PyVtools.egg-info/requires.txt
 PyVtools.egg-info/top_level.txt
+PyVtools/PyVtools.egg-info/PKG-INFO
+PyVtools/PyVtools.egg-info/SOURCES.txt
+PyVtools/PyVtools.egg-info/dependency_links.txt
+PyVtools/PyVtools.egg-info/requires.txt
+PyVtools/PyVtools.egg-info/top_level.txt
