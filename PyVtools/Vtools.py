@@ -164,6 +164,10 @@ class VtoolsViewer:
 
         if 'f' in plt.rcParams['keymap.fullscreen']:
             plt.rcParams['keymap.fullscreen'].remove('f')
+        if 'l' in plt.rcParams['keymap.yscale']:
+            plt.rcParams['keymap.yscale'].remove('l')
+        if 'k' in plt.rcParams['keymap.xscale']:
+            plt.rcParams['keymap.xscale'].remove('k')
 
         (d0, a0) = self.pix2wcs_0CRVAL(0., 0.)
         (d1, a1) = self.pix2wcs_0CRVAL(hdr['NAXIS2'] - 1, hdr['NAXIS1'] - 1)
@@ -605,6 +609,20 @@ class VtoolsViewer:
             self.ax.set_aspect('equal', adjustable='box')
             self.fig.canvas.draw()
 
+        if event.key in ['k', 'K']:
+            print("looping back over color maps")
+
+            self.icmap -= 1
+            if self.icmap < 0:
+                self.icmap = len(cmaps) - 1
+            acmap = cmaps[self.icmap]
+
+            print("trying ", acmap)
+            self.theimage.set_cmap(acmap)
+            print('Switch to ', acmap)
+            self.ax.set_aspect('equal', adjustable='box')
+            self.fig.canvas.draw()
+
         if event.key in ['A', 'a'] and not self.rs.active:
             print('RectangleSelector activated.')
             self.rs.set_active(True)
@@ -685,6 +703,7 @@ class VtoolsViewer:
             print('key u: update intensity scale to selection')
             print('key c: change colormap')
             print('key l: loop through colormaps')
+            print('key k: loop back through colormaps')
             print('key w: save selected region to view.fits')
             print('key f: start interactive 2D Gaussian fit')
             print('key y/n: confirm/cancel Gaussian subtraction')
