@@ -113,7 +113,6 @@ def gaussian_residuals(
     model = evaluate_gaussian_cholesky(
         shape, p["amplitude"], float(x_pix), float(y_pix), L11_pix, L21_pix, L22_pix
     )
-
     return ((model - data) / rms).flatten()
 
 
@@ -121,14 +120,18 @@ def fit(
     im_data=None,
     wcs_data=None,
     pixscale=0.01,  # arcsec/pixel
-    rms0=1e-6,  # Jy/beam
+    rms0=None,  # Jy/beam
     init_phys=None,  #
     optimizer="least_squares",
     run_sampler=True,
     uplimit_gauss_stddev=1.0,
     centroid_domain=1 / 3600,  # 1arcsec
     with_plot=True,
+    fit_flags=None,
 ):
+    if rms0 is None:
+        rms0 = np.std(im_data[np.isfinite(im_data)])
+
     print("\n--- Initial Guess Physical Parameters ---")
     physical_keys = [
         "amplitude",
@@ -170,6 +173,9 @@ def fit(
         "L21": False,
         "L22": False,
     }
+
+    if fit_flags is not None:
+        fixed_flags.update(fit_flags)
 
     free_keys = [k for k, is_fixed in fixed_flags.items() if not is_fixed]
     fixed_dict = {
@@ -287,8 +293,13 @@ def fit(
 
     elif optimizer == "nautilus":
         # Bounding prior volume (+/- 0.01 deg is approx 36 arcsec search box for centroid)
+
+        # Ensure the upper limit is at least 3x the user's initial guess
+        dynamic_uplimit = max(uplimit_gauss_stddev, init_phys["fwhm_maj_arcsec"] * 3.0)
+
+        # Bounding prior volume
         prior_bounds = {
-            "amplitude": (1e-6, 1e-2),
+            "amplitude": (1e-6, 1e-2),  # You might want to scale this dynamically too!
             "ra": (
                 init_phys["ra"] - centroid_domain,
                 init_phys["ra"] + centroid_domain,
@@ -297,10 +308,25 @@ def fit(
                 init_phys["dec"] - centroid_domain,
                 init_phys["dec"] + centroid_domain,
             ),
-            "L11": (1e-4, uplimit_gauss_stddev),
-            "L21": (-uplimit_gauss_stddev, uplimit_gauss_stddev),
-            "L22": (1e-4, uplimit_gauss_stddev),
+            "L11": (1e-4, dynamic_uplimit),
+            "L21": (-dynamic_uplimit, dynamic_uplimit),
+            "L22": (1e-4, dynamic_uplimit),
         }
+
+        # prior_bounds = {
+        #     "amplitude": (1e-6, 1e-2),
+        #     "ra": (
+        #         init_phys["ra"] - centroid_domain,
+        #         init_phys["ra"] + centroid_domain,
+        #     ),
+        #     "dec": (
+        #         init_phys["dec"] - centroid_domain,
+        #         init_phys["dec"] + centroid_domain,
+        #     ),
+        #     "L11": (1e-4, uplimit_gauss_stddev),
+        #     "L21": (-uplimit_gauss_stddev, uplimit_gauss_stddev),
+        #     "L22": (1e-4, uplimit_gauss_stddev),
+        # }
 
         def prior_transform(u):
             x = np.zeros_like(u)
@@ -449,7 +475,7 @@ def fit(
         "dec": final_params.get("dec", np.nan),
         "fwhm_maj_arcsec": maj_eval,
         "fwhm_min_arcsec": min_eval,
-        "pa_deg": pa_eval
+        "pa_deg": pa_eval,
     }
 
     if with_plot:
@@ -506,11 +532,14 @@ if __name__ == "__main__":
     hdu = fits.open("view.fits")
     image_shape = hdu[0].data.shape
     hdr0 = hdu[0].header
-    im_data = hdu[0].data
+
+    #im_data = hdu[0].data
+    im_data = np.squeeze(hdu[0].data)
+    image_shape = im_data.shape
     wcs_data = WCS(hdr0)
 
     pixscale = np.abs(hdr0["CDELT1"]) * 3600.0
-    rms0 = 5e-5
+    rms0 = None
 
     # --- 2. Initial Physical Parameters ---
     init_phys = {
