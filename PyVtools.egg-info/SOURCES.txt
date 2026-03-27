@@ -3,11 +3,12 @@ README.md
 README_symlinks
 setup.py
 PyVtools/Vtools.py
-PyVtools/Vtools.squeeze.py
 PyVtools/__init__.py
+PyVtools/beam.fits
 PyVtools/beam.py
 PyVtools/head.py
 PyVtools/view.py
+PyVtools/view_whole.fits
 PyVtools.egg-info/PKG-INFO
 PyVtools.egg-info/SOURCES.txt
 PyVtools.egg-info/dependency_links.txt

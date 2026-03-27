@@ -1,5 +1,7 @@
 __pycache__/
 *~
+*npy
+*fits
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
@@ -296,3 +298,4 @@ TSWLatexianTemp*
 #*Notes.bib
 
 >>>>>>> 579380cc4148dcc7023a6e5572c0607979679b9a
+.aider*
