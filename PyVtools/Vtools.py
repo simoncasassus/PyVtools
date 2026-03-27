@@ -22,7 +22,12 @@ from ImUtils.Resamp import gridding
 
 include_path = "/home/simon/gitcommon/mgauss/"
 sys.path.append(include_path)
-from mgauss import physical_to_cholesky, evaluate_gaussian_cholesky, gaussian_residuals, fit 
+from mgauss import (
+    physical_to_cholesky,
+    evaluate_gaussian_cholesky,
+    gaussian_residuals,
+    fit,
+)
 
 icmap = 0
 
@@ -650,12 +655,18 @@ class VtoolsViewer:
             amplitude = np.squeeze(self.hdu.data)[j_pix, i_pix]
 
             wcs_full = WCS(self.hdu.header)
-            ra_cen, dec_cen = wcs_full.wcs_pix2world(i_pix, j_pix, 0)
+            ra_cen_abs, dec_cen_abs = wcs_full.wcs_pix2world(i_pix, j_pix, 0)
+
+            crval1, crval2 = wcs_full.wcs.crval
+            ra_offset = (
+                (float(ra_cen_abs) - crval1) * 3600.0 * np.cos(np.radians(crval2))
+            )
+            dec_offset = (float(dec_cen_abs) - crval2) * 3600.0
 
             self.interactive_init_phys = {
                 "amplitude": amplitude,
-                "ra": float(ra_cen),
-                "dec": float(dec_cen),
+                "ra_offset_arcsec": ra_offset,
+                "dec_offset_arcsec": dec_offset,
                 "_centroid_x_data": x_cen,
                 "_centroid_y_data": y_cen,
             }
@@ -731,12 +742,18 @@ class VtoolsViewer:
             amplitude = np.squeeze(self.hdu.data)[j_pix, i_pix]
 
             wcs_full = WCS(self.hdu.header)
-            ra_cen, dec_cen = wcs_full.wcs_pix2world(i_pix, j_pix, 0)
+            ra_cen_abs, dec_cen_abs = wcs_full.wcs_pix2world(i_pix, j_pix, 0)
+
+            crval1, crval2 = wcs_full.wcs.crval
+            ra_offset = (
+                (float(ra_cen_abs) - crval1) * 3600.0 * np.cos(np.radians(crval2))
+            )
+            dec_offset = (float(dec_cen_abs) - crval2) * 3600.0
 
             self.interactive_init_phys = {
                 "amplitude": amplitude,
-                "ra": float(ra_cen),
-                "dec": float(dec_cen),
+                "ra_offset_arcsec": ra_offset,
+                "dec_offset_arcsec": dec_offset,
             }
 
             hdr = self.hdu.header
@@ -786,6 +803,7 @@ class VtoolsViewer:
                 wcs_data=wcs_data,
                 pixscale=pixscale,
                 rms0=rms0,
+                hdr=hdrz,
                 init_phys=init_phys,
                 with_plot=False,
                 fit_flags=fit_flags,
@@ -804,7 +822,7 @@ class VtoolsViewer:
                 full_pixscale = 1.0
 
             fit_x_pix_full, fit_y_pix_full = full_wcs.wcs_world2pix(
-                fit_params["ra"], fit_params["dec"], 0
+                fit_params["ra_deg"], fit_params["dec_deg"], 0
             )
 
             L11_pix, L21_pix, L22_pix = physical_to_cholesky(
@@ -859,7 +877,9 @@ class VtoolsViewer:
 
         # Common post-fit logic
         wcs_full = WCS(self.hdu.header)
-        x_pix, y_pix = wcs_full.wcs_world2pix(fit_params["ra"], fit_params["dec"], 0)
+        x_pix, y_pix = wcs_full.wcs_world2pix(
+            fit_params["ra_deg"], fit_params["dec_deg"], 0
+        )
         d_cen_arcsec, a_cen_arcsec = self.pix2wcs_0CRVAL(y_pix, x_pix)
 
         ellipse = Ellipse(
@@ -1028,10 +1048,14 @@ class VtoolsViewer:
                     print(f"Coordinates are outside the image bounds: {e}")
                     return
 
+                crval1, crval2 = wcs_full.wcs.crval
+                ra_offset = (ra_cen - crval1) * 3600.0 * np.cos(np.radians(crval2))
+                dec_offset = (dec_cen - crval2) * 3600.0
+
                 init_phys = {
                     "amplitude": amplitude,
-                    "ra": ra_cen,
-                    "dec": dec_cen,
+                    "ra_offset_arcsec": ra_offset,
+                    "dec_offset_arcsec": dec_offset,
                     "fwhm_maj_arcsec": hdr["BMAJ"] * 3600.0,
                     "fwhm_min_arcsec": hdr["BMIN"] * 3600.0,
                     "pa_deg": hdr["BPA"],
